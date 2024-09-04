@@ -1,0 +1,1 @@
+phpMyAdmin går her, den er for stor til å commite hele til GitHub

@@ -13,6 +13,16 @@ if(!empty($_SESSION['username'])){
     header("Location: index.php");
 };
 
+$sql = "SELECT profile_image FROM users WHERE username = '$username'";
+$result = $conn->query($sql);
+while ($row = mysqli_fetch_array($result)) {
+    if ($row['profile_image'] == NULL){
+        $sidebarProfileImage = "defaultprofile.svg";
+    } else {
+        $sidebarProfileImage = $row['profile_image'];
+    };
+}
+
 //Inserter melding inn i database hvis melding er postet
 if(!empty($_POST['message_content'])){
     $message_content = $_POST['message_content'];
@@ -24,9 +34,10 @@ if(!empty($_POST['message_content'])){
         $temp = explode(".", $file_name);
         $newfilename = round(microtime(true)) . '.' . end($temp);
         $folder = 'user_images/'.$newfilename;
+        $file_name = $newfilename;
     };
     if(move_uploaded_file($tempname, $folder)){
-        $sql = "INSERT INTO messages (username, message, file) VALUES ('$username', '$message_content', '$newfilename')";
+        $sql = "INSERT INTO messages (username, message, file) VALUES ('$username', '$message_content', '$file_name')";
     } else {
         $sql = "INSERT INTO messages (username, message) VALUES ('$username', '$message_content')";
     };
@@ -55,19 +66,22 @@ if(!empty($_POST['message_content'])){
             <div class="dropdown">
                 <button class="dropbtn"></button>
                 <div class="dropdown-content">
+                    <a href="user_settings.php">Innstillinger</a>
                     <a href="logout.php">Logg ut.</a>
                 </div>
             </div>
         </div>
         <div class="profile">
-            <img src="img/profile.svg" alt="Default Profile Picture">
+            <div class="sidebar_profile_image_container">
+                <div class="profile_image_sidebar" style="background-image: url(<?php echo "profile_images/" . $sidebarProfileImage; ?>);"></div>
+            </div>
             <p><?php echo $username ?></p>
         </div>
     </div>
     <div class="message_bar">
         <form action="board.php" method="POST" class="message_form" enctype="multipart/form-data">
             <input type="text" id="writeArea" name="message_content" placeholder="Skriv din melding her." maxlength="450" required>
-            <div id="imageMenu">
+            <div class="imageMenu" id="imageMenu">
                 <p>Legg til bilde.</p>
                 <input type="file" id="imageInput" accept="image/jpeg, image/png" onchange="readURL(this);" name="image">
                 <div class="preview_img_container">

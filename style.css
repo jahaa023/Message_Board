@@ -219,10 +219,20 @@ body{
     margin-right: 5px;
 }
 
+.sidebar_profile_image_container{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
 /*Selve profilbildet*/
-.profile img{
+.profile_image_sidebar{
     width: 70px;
     height: 70px;
+    border-radius: 70px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 /*Hvit boks hvor man skriver inn meldinger*/
@@ -280,7 +290,7 @@ body{
 }
 
 /*Hvit boks hvor man velger bilde å sende*/
-#imageMenu{
+.imageMenu{
     display: none;
     width: 250px;
     height: 200px;
@@ -389,6 +399,7 @@ body{
     font-family: "indivisible-variable", sans-serif;
     font-variation-settings: "wght" 600;
     font-size: 13px;
+    margin-left: 5px;
 }
 
 /*Innhold i meldingene*/
@@ -405,6 +416,21 @@ body{
     margin-bottom: 20px;
 }
 
+#message_profile_image{
+    width: 35px;
+    height: 35px;
+    border-radius: 50px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+#message_username_container{
+    position: relative;
+    top: 10px;
+    display: flex;
+}
+
 /*Message Board logo i hjørnet*/
 .corner_logo{
     width: 70px;
@@ -414,4 +440,111 @@ body{
     margin-right: 20px;
     margin-top: 20px;
     z-index: 0;
+}
+
+.settings_container{
+    width: 1000px;
+    height: 600px;
+    border-radius: 30px;
+    border: solid black 1px;
+    background-color: white;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.settings_inner_container{
+    margin-left: 20px;
+    margin-right: 20px;
+    width: 100%;
+}
+
+.settings_inner_container h1{
+    font-family: "indivisible-variable", sans-serif;
+    font-variation-settings: "wght" 600;
+}
+
+.settings_ferdig{
+    width: 130px;
+    height: 50px;
+    font-family: "indivisible-variable", sans-serif;
+    font-variation-settings: "wght" 400;
+    border: solid 1px black;
+    cursor: pointer;
+    top: 185px;
+    position: absolute;
+    margin-top: 345px;
+}
+
+.settings_profile_container{
+    display: flex;
+}
+
+.settings_profile_container p{
+    font-family: "indivisible-variable", sans-serif;
+    font-variation-settings: "wght" 600;
+    font-size: 35px;
+    margin-left: 20px;
+}
+
+.settings_profile_picture{
+    width: 100px;
+    height: 100px;
+    border-radius: 100px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.settings_logo_container{
+    width: 100%;
+    height: 70px;
+}
+
+.settings_logo_container img{
+    height: 50px;
+    top: 50%;
+    left: 50%;
+    position: relative;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+#settings_endre_profilbilde{
+    width: 130px;
+    height: 50px;
+    font-family: "indivisible-variable", sans-serif;
+    font-variation-settings: "wght" 400;
+    border: solid 1px black;
+    cursor: pointer;
+    margin-top: 20px;
+    margin-right: 20px;
+}
+
+#settings_endre_brukernavn{
+    width: 130px;
+    height: 50px;
+    font-family: "indivisible-variable", sans-serif;
+    font-variation-settings: "wght" 400;
+    border: solid 1px black;
+    cursor: pointer;
+    margin-top: 20px;
+    margin-right: 20px;
+}
+
+#endreBrukernavnMeny {
+    position: relative;
+    display: none;
+    top: 20px;
+}
+
+#imageMenuSettings{
+    height: 220px;
+}
+
+#profileImageSettingsSubmit{
+    position: relative;
+    top: 37px;
 }

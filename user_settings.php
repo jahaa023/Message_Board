@@ -1,7 +1,8 @@
 <?php
 // Kobler til mysqli server og spesifiserer hvilken database som skal bli brukt
 $username = "";
-$brukernavnvarsel = "";
+$visvarsel = 0;
+$varsel = "";
 session_start();
 require 'conn.php';
 $conn->select_db("board");
@@ -13,6 +14,7 @@ if(!empty($_SESSION['username'])){
     header("Location: index.php");
 };
 
+//Endrer brukernavn
 if(!empty($_POST['submitusername'])){
     $newusername = $_POST['newusername'];
     $sql = "SELECT username FROM users WHERE username='$newusername'";
@@ -26,29 +28,40 @@ if(!empty($_POST['submitusername'])){
         $_SESSION['username'] = $newusername;
         $username = $newusername;
     } else {
-        $brukernavnvarsel = "Brukernavn tatt!";
+        $varsel = "Brukernavn tatt!";
+        $visvarsel = 1;
     };
 };
 
+//Endrer profilbilde
 if(!empty($_POST['submit'])){
     $file_name = $_FILES['image']['name'];
     $tempname = $_FILES['image']['tmp_name'];
+    $file_type = $_FILES['image']['type'];
     $folder = 'profile_images/'.$file_name;
-    //Endrer navn på fil hvis filen allerede finnes
-    if (file_exists($folder)){
-        $temp = explode(".", $file_name);
-        $newfilename = round(microtime(true)) . '.' . end($temp);
-        $folder = 'profile_images/'.$newfilename;
-        $file_name = $newfilename;
-    };
-    if(move_uploaded_file($tempname, $folder)){
-        $sql = "UPDATE users SET profile_image='$file_name' WHERE username='$username'";
-        $result = $conn->query($sql);
+    $allowed = array("image/jpeg", "image/png");
+    if (!in_array($file_type, $allowed)) {
+        $varsel = "Filtype ikke støttet. Bare JPG og PNG tillat";
+        $visvarsel = 1;
     } else {
-        echo "Kunne ikke endre profilbilde.";
-    };
+        //Endrer navn på fil hvis filen allerede finnes
+        if (file_exists($folder)){
+            $temp = explode(".", $file_name);
+            $newfilename = round(microtime(true)) . '.' . end($temp);
+            $folder = 'profile_images/'.$newfilename;
+            $file_name = $newfilename;
+        };
+        if(move_uploaded_file($tempname, $folder)){
+            $sql = "UPDATE users SET profile_image='$file_name' WHERE username='$username'";
+            $result = $conn->query($sql);
+        } else {
+            $varsel = "Kunne ikke endre profilbilde";
+            $visvarsel = 1;
+        };
+    }
 };
 
+//Laster inn profilbildet til bruker som er logget inn
 $sql = "SELECT profile_image FROM users WHERE username='$username'";
 $result = $conn->query($sql);
 $row = mysqli_fetch_array($result);
@@ -98,8 +111,10 @@ if($profile_image == NULL) {
                     <input type="text" name="newusername" placeholder="Skriv inn ny brukernavn">
                     <input type="submit" value="Lagre" name="submitusername">
                 </div>
-                <p><?php echo $brukernavnvarsel; ?></p>
             </form>
+            <div class="settings_warning">
+                <p><?php echo $varsel; ?></p>
+            </div>
             <button onclick="location.href='board.php'" type="button" class="settings_ferdig">Ferdig</button>
         </div>
     </div>
@@ -152,4 +167,9 @@ if($profile_image == NULL) {
         window.history.replaceState( null, null, window.location.href );
     }
 </script>
+<?php
+    if($visvarsel == 1){
+        echo "<style>.settings_warning{display: block;}</style>";
+    };
+?>
 </html>

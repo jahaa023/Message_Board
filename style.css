@@ -409,6 +409,7 @@ body{
     font-size: 16px;
 }
 
+/*Bilde inne i meldinger med bilde*/
 #message_image{
     object-fit: contain;
     max-width: 500px;
@@ -416,6 +417,7 @@ body{
     margin-bottom: 20px;
 }
 
+/*Profil bilde på meldinger*/
 #message_profile_image{
     width: 35px;
     height: 35px;
@@ -425,10 +427,36 @@ body{
     background-size: cover;
 }
 
+/*Container som inneholder brukernavn og profilbilde i melding*/
 #message_username_container{
     position: relative;
     top: 10px;
     display: flex;
+}
+
+/*Container som centerer varsel*/
+.messages_varsel_container{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    margin-top: 20px;
+}
+
+/*Selve varselen som kommer hvis du f.eks prøver å laste opp feil filtype*/
+.messages_varsel{
+    width: 80%;
+    height: 30px;
+    background-color: rgba(0, 0, 0, 0.662);
+    border-radius: 30px;
+    font-family: "indivisible-variable", sans-serif;
+    font-variation-settings: "wght" 400;
+    color: white;
+    z-index: 999;
+    text-align: center;
+    line-height: 2px;
+    display: none;
 }
 
 /*Message Board logo i hjørnet*/
@@ -442,6 +470,7 @@ body{
     z-index: 0;
 }
 
+/*Container som inneholder bruker instillinger*/
 .settings_container{
     width: 1000px;
     height: 600px;
@@ -455,17 +484,20 @@ body{
     transform: translate(-50%, -50%);
 }
 
+/*Tar margin på sidene på bruker innstillinger*/
 .settings_inner_container{
     margin-left: 20px;
     margin-right: 20px;
     width: 100%;
 }
 
+/*h1 tag i bruker innstillinger*/
 .settings_inner_container h1{
     font-family: "indivisible-variable", sans-serif;
     font-variation-settings: "wght" 600;
 }
 
+/*Ferdig knappen på instillinger*/
 .settings_ferdig{
     width: 130px;
     height: 50px;
@@ -478,10 +510,12 @@ body{
     margin-top: 345px;
 }
 
+/*Container som inneholder brukernavn og profilbilde til logget inn bruker på bruker instillinger*/
 .settings_profile_container{
     display: flex;
 }
 
+/*p tag i settings profile container*/
 .settings_profile_container p{
     font-family: "indivisible-variable", sans-serif;
     font-variation-settings: "wght" 600;
@@ -489,6 +523,7 @@ body{
     margin-left: 20px;
 }
 
+/*Proilbilde til logget inn bruker på instillinger*/
 .settings_profile_picture{
     width: 100px;
     height: 100px;
@@ -498,11 +533,13 @@ body{
     background-size: cover;
 }
 
+/*Container som sentrerer logo på instillinger*/
 .settings_logo_container{
     width: 100%;
     height: 70px;
 }
 
+/*Logoen på instillinger*/
 .settings_logo_container img{
     height: 50px;
     top: 50%;
@@ -512,6 +549,7 @@ body{
     transform: translate(-50%, -50%);
 }
 
+/*Knapp for å endre profilbilde i settings*/
 #settings_endre_profilbilde{
     width: 130px;
     height: 50px;
@@ -523,6 +561,7 @@ body{
     margin-right: 20px;
 }
 
+/*Knapp for å endre brukernavn i settings*/
 #settings_endre_brukernavn{
     width: 130px;
     height: 50px;
@@ -534,17 +573,87 @@ body{
     margin-right: 20px;
 }
 
+/*Container som inneholder input for å endre brukernavn på instillinger*/
 #endreBrukernavnMeny {
     position: relative;
     display: none;
     top: 20px;
 }
 
+/*Container som inneholder input for å endre profilbilde på instillinger*/*/
 #imageMenuSettings{
     height: 220px;
 }
 
+/*Lagre knappen når man endrer profilbilde*/
 #profileImageSettingsSubmit{
     position: relative;
     top: 37px;
+}
+
+/*Varsel man får hvis noe går galt på innstillinger*/
+.settings_warning{
+    display: none;
+    width: 282px;
+    height: 70px;
+    border: solid 1px rgb(77, 77, 77);
+    background-color: rgba(255, 89, 89, 0.353);
+    text-align: center;
+    line-height: 40px;
+    margin-top: 20px;
+    font-family: "indivisible-variable", sans-serif;
+    font-variation-settings: "wght" 400;
+    font-size: 14px;
+}
+
+/*Delen av en melding som viser når meldingen ble sendt*/
+#message_timestamp{
+    color: rgb(94, 94, 94);
+    font-family: "indivisible-variable", sans-serif;
+    font-variation-settings: "wght" 400;
+    font-size: 12px;
+    margin-left: 5px;
+    position: relative;
+    top: 2px;
+}
+
+/*Knapp for å slette meldinger man har sendt*/
+#deleteMessageButton{
+    width: 40px;
+    height: 40px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    background-image: url(img/trashcan.svg);
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-size: 50%;
+    border: black 1px solid;
+    border-radius: 10px;
+    background-color: white;
+}
+
+/*Knapp for å slette meldinger man har sendt, på hover*/
+#deleteMessageButton:hover{
+    background-color: rgb(255, 113, 113);
+}
+
+/*Knapp på bunnen av skjermen hvor man kan laste inn flere meldinger*/
+#lastInnFlereButton{
+    background-color: #7ED0FF;
+    font-family: "indivisible-variable", sans-serif;
+    font-variation-settings: "wght" 400;
+    cursor: pointer;
+    margin-left: 20px;
+    color: white;
+    width: 200px;
+    height: 50px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border: none;
+}
+
+/*Knapp på bunnen av skjermen hvor man kan laste inn flere meldinger, på hover*/
+#lastInnFlereButton:hover{
+    background-color: #2483ba;
 }

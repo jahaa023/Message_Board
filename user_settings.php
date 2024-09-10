@@ -39,9 +39,9 @@ if(!empty($_POST['submit'])){
     $tempname = $_FILES['image']['tmp_name'];
     $file_type = $_FILES['image']['type'];
     $folder = 'profile_images/'.$file_name;
-    $allowed = array("image/jpeg", "image/png");
+    $allowed = array("image/jpeg", "image/png", "image/webp");
     if (!in_array($file_type, $allowed)) {
-        $varsel = "Filtype ikke støttet. Bare JPG og PNG tillat";
+        $varsel = "Filtype ikke støttet. Bare JPG, PNG og WebP tillat";
         $visvarsel = 1;
     } else {
         //Endrer navn på fil hvis filen allerede finnes
@@ -100,7 +100,7 @@ if($profile_image == NULL) {
                 <button type="button" id="settings_endre_profilbilde">Endre profilbilde</button>
                 <div class="imageMenu" id="imageMenuSettings">
                     <p>Legg til bilde.</p>
-                    <input type="file" id="imageInput" accept="image/jpeg, image/png" onchange="readURL(this);" name="image">
+                    <input type="file" id="imageInput" accept="image/jpeg, image/png, image/webp" onchange="readURL(this);" name="image">
                     <div class="preview_img_container">
                         <img id="preview_img" src="#"/>
                     </div>

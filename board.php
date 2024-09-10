@@ -1,5 +1,8 @@
 <?php
 // Kobler til mysqli server og spesifiserer hvilken database som skal bli brukt og declarer noen variabler
+
+use function Safe\imagecreatefrompng;
+
 $username = "";
 session_start();
 require 'conn.php';
@@ -14,7 +17,6 @@ if(!isset($_SESSION['message_amount'])){
     $_SESSION['message_amount'] = 50;
 };
 
-
 //Hvis du ikke er logget inn, blir du redirected
 if(!empty($_SESSION['username'])){
     $username = $_SESSION['username'];
@@ -25,13 +27,7 @@ if(!empty($_SESSION['username'])){
 //Henter profilbildet til bruker som er logget inn
 $sql = "SELECT profile_image FROM users WHERE username = '$username'";
 $result = $conn->query($sql);
-while ($row = mysqli_fetch_array($result)) {
-    if ($row['profile_image'] == NULL){
-        $sidebarProfileImage = "defaultprofile.svg";
-    } else {
-        $sidebarProfileImage = $row['profile_image'];
-    };
-};
+$profilepicrow = mysqli_fetch_array($result);
 
 //Funksjon for å slette meldinger man har sendt
 if(!empty($_POST['delete_message'])){
@@ -44,6 +40,16 @@ if(!empty($_POST['delete_message'])){
 if(!empty($_POST['last_inn_flere'])){
     $_SESSION['message_amount'] = $_SESSION['message_amount'] + 50;
 }
+
+//Funksjon for å endre melding
+if(!empty($_POST['edit_message_content'])){
+    $newcontent = $_POST['edit_message_content'];
+    $finaleditmessage_id = $_POST['edit_message_id'];
+    $sql = "UPDATE messages SET message='$newcontent' WHERE message_id='$finaleditmessage_id'";
+    $conn->query($sql);
+    $sql ="UPDATE messages SET endret=1 WHERE message_id='$finaleditmessage_id'";
+    $conn->query($sql);
+};
 
 //Inserter melding inn i database hvis melding er postet
 if(!empty($_POST['message_content'])){
@@ -58,9 +64,9 @@ if(!empty($_POST['message_content'])){
     $folder = 'user_images/'.$file_name;
     $file_type = $_FILES['image']['type'];
     //Hvis filtypen ikke er supported så sender den ikke melding
-    $allowed = array("image/jpeg", "image/png");
+    $allowed = array("image/jpeg", "image/png", "image/webp", "image/gif");
     if (!in_array($file_type, $allowed) and !empty($file_type)) {
-        $varsel = "Filtype ikke støttet. Bare JPG og PNG tillat";
+        $varsel = "Filtype ikke støttet. Bare JPG, PNG, GIF og WebP tillat";
         $visvarsel = 1;
     } else {
         //Endrer navn på fil hvis filen allerede finnes
@@ -93,6 +99,46 @@ if(!empty($_POST['message_content'])){
     <script class="jsbin" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.0/jquery-ui.min.js"></script>
 </head>
 <body onload="table()">
+    <!--Div som popper opp når man skal endre melding-->
+    <div class="blurry_container">
+        <div class="edit_message_container">
+            <h1 class="edit_message_h1">Endre melding</h1>
+                <?php
+                if(!empty($_POST['edit_message'])){
+                    $editmessage_id = $_POST['edit_message'];
+                    echo "<style>.blurry_container{display: block;}</style>";
+                    //Henter klokken i Oslo
+                    $datetime = new DateTime( "now", new DateTimeZone( "Europe/Oslo" ) );
+                    $date = $datetime->format( 'Y-m-d' );
+                    $sql = "SELECT * FROM messages WHERE message_id='$editmessage_id'";
+                    $result = $conn->query($sql);
+                    $row = mysqli_fetch_array($result);
+                        //Henter profilbildet til melding
+                        $sql2 = "SELECT profile_image FROM users WHERE username='" . $row['username'] . "'";
+                        $result2 = $conn->query($sql2);
+                        $row2 = mysqli_fetch_array($result2);
+                    
+                        //Hvis datoen meldingen ble sendt er i dag, så står det "i dag" isteden for full dato
+                        if ($row['date'] == $date) {
+                            $datemessage = "I dag (endret)";
+                        } else {
+                            $datemessage = $row['date'] . " (endret)";
+                        };
+
+                        //Echoer melding. Hvis melding har bilde, vis bilde. skifter hvor meldingen står med en input
+                        if ($row['file'] != NULL) {
+                            $messagefile = "<a target='_blank' href='user_images/" . $row['file'] . "'><img id='message_image' src='user_images/" . $row['file'] . "'></a><br>";
+                        } else {
+                            $messagefile = "";
+                        }
+                        echo "<input type='hidden' value='" . $row['message_id'] . "' form='actionForm' name='edit_message_id'></input>";
+                        echo "<div class='message' id='editMessage'><div id='message_username_container'><div id='message_profile_image' style='background-image: url(profile_images/" . $row2['profile_image'] . ");'></div><p id='message_username'>" . validate($row['username']) . "</p><p id='message_timestamp'>" . $row['time'] . " - " . $datemessage . "</p></div><input type='text' maxlength='450' name='edit_message_content' id='edit_message_input' form='actionForm' value='" . validate($row['message']) . "'></input><br>" . $messagefile . "</div>";
+                        echo "<input type='submit' id='submitMessageEdit' form='actionForm' value=''></input>";
+                        echo "<input type='button' id='cancelSubmitMessageEdit' onClick='window.location.reload()'>";
+                    };
+                ?>
+        </div>
+    </div>
     <div class="messages_varsel_container">
         <div class="messages_varsel" id="messages_varsel">
             <p><?php echo $varsel;?></p>
@@ -113,7 +159,7 @@ if(!empty($_POST['message_content'])){
         </div>
         <div class="profile">
             <div class="sidebar_profile_image_container">
-                <div class="profile_image_sidebar" style="background-image: url(<?php echo "profile_images/" . $sidebarProfileImage; ?>);"></div>
+                <div class="profile_image_sidebar" style="background-image: url(<?php echo "profile_images/" . $profilepicrow['profile_image']; ?>);"></div>
             </div>
             <p><?php echo $username ?></p>
         </div>
@@ -123,7 +169,7 @@ if(!empty($_POST['message_content'])){
             <input type="text" id="writeArea" name="message_content" placeholder="Skriv din melding her." maxlength="450" required>
             <div class="imageMenu" id="imageMenu">
                 <p>Legg til bilde.</p>
-                <input type="file" id="imageInput" accept="image/jpeg, image/png" onchange="readURL(this);" name="image" value="image_input">
+                <input type="file" id="imageInput" accept="image/jpeg, image/png, image/webp, image/gif" onchange="readURL(this);" name="image" value="image_input">
                 <div class="preview_img_container">
                     <img id="preview_img" src="#"/>
                 </div>
@@ -136,8 +182,7 @@ if(!empty($_POST['message_content'])){
         <div class="message_area" id="message_area">
         </div>
     </div>
-    <form action="board.php" method="POST" id="deleteForm"></form>
-    <form action="board.php" method="POST" id="lastInnFlereForm"></form>
+    <form action="board.php" method="POST" id="actionForm"></form>
     <script type="text/javascript">
         //AJAX funksjon som oppdaterer meldinger i real time
         function table(){

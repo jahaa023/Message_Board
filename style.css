@@ -392,6 +392,7 @@ body{
     border: solid 1px black;
     border-radius: 15px;
     margin-bottom: 10px;
+    background-color: white;
 }
 
 /*Brukernavn i meldingene*/
@@ -415,6 +416,7 @@ body{
     max-width: 500px;
     max-height: 300px;
     margin-bottom: 20px;
+    margin-right: 10px;
 }
 
 /*Profil bilde på meldinger*/
@@ -594,7 +596,7 @@ body{
 /*Varsel man får hvis noe går galt på innstillinger*/
 .settings_warning{
     display: none;
-    width: 282px;
+    width: 330px;
     height: 70px;
     border: solid 1px rgb(77, 77, 77);
     background-color: rgba(255, 89, 89, 0.353);
@@ -656,4 +658,110 @@ body{
 /*Knapp på bunnen av skjermen hvor man kan laste inn flere meldinger, på hover*/
 #lastInnFlereButton:hover{
     background-color: #2483ba;
+}
+
+/*Knapp på meldingene til logget inn bruker hvor man endrer meldingen*/
+#editMessageButton{
+    width: 40px;
+    height: 40px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    background-image: url(img/pencil.svg);
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-size: 50%;
+    border: black 1px solid;
+    border-radius: 10px;
+    background-color: white;
+    margin-left: 10px;
+}
+
+/*Knapp på meldingene til logget inn bruker hvor man endrer meldingen, på hover*/
+#editMessageButton:hover{
+    background-color: #7ED0FF;
+}
+
+/*Blurry bakgrunn som kommer når man endrer melding*/
+.blurry_container{
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    backdrop-filter: blur(10px);
+    z-index: 999;
+    display: none;
+}
+
+/*Overskrift i melding endringsmeny hvor det står "endre melding"*/
+.edit_message_h1{
+    margin-left: 20px;
+    font-family: "indivisible-variable", sans-serif;
+    font-variation-settings: "wght" 600;
+}
+
+/*Container som inneholder melding som blir endret*/
+.edit_message_container{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+/*Melding som blir endret*/
+#editMessage{
+    min-width: 300px;
+}
+
+/*Input hvor man skriver inn den nye melding når man endrer melding*/
+#edit_message_input{
+    font-family: "indivisible-variable", sans-serif;
+    font-variation-settings: "wght" 400;
+    font-size: 13px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+/*Knapp man trykker for å confirme endring av melding*/
+#submitMessageEdit{
+    margin-right: 10px;
+    margin-left: 20px;
+    width: 40px;
+    height: 40px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    background-image: url(img/check.svg);
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-size: 50%;
+    border: black 1px solid;
+    border-radius: 10px;
+    background-color: rgb(115, 255, 131);
+}
+
+/*Knapp man trykker for å confirme endring av melding, på hover*/
+#submitMessageEdit:hover{
+    background-color: rgb(47, 188, 63);
+}
+
+/*Knapp man trykker for å kansellere endring av melding*/
+#cancelSubmitMessageEdit{
+    width: 40px;
+    height: 40px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    background-image: url(img/x.svg);
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-size: 50%;
+    border: black 1px solid;
+    border-radius: 10px;
+    background-color: rgb(255, 115, 115);
+}
+
+/*Knapp man trykker for å kansellere endring av melding, på hover*/
+#cancelSubmitMessageEdit:hover{
+    background-color: rgb(188, 47, 47);
 }

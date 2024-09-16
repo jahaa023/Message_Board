@@ -1,8 +1,6 @@
 <?php
 // Kobler til mysqli server og spesifiserer hvilken database som skal bli brukt og declarer noen variabler
 
-use function Safe\imagecreatefrompng;
-
 $username = "";
 session_start();
 require 'conn.php';
@@ -11,11 +9,31 @@ $conn->select_db("board");
 $varsel = "";
 $visvarsel = 0;
 $sidebarProfileImage = "";
+$replyingto_message = "";
+$replyingto_username = "";
+$svarertil = 0;
 
 //Spesifiserer hvor mange meldinger skal lastes inn når man først åpner siden
 if(!isset($_SESSION['message_amount'])){
     $_SESSION['message_amount'] = 50;
 };
+
+//Hvis man skal replye til en melding så viser den hvilken melding man replyer til
+if(!empty($_POST['reply_message'])){
+    $reply_message_id = $_POST['reply_message'];
+    $sql = "SELECT * FROM messages WHERE message_id = '$reply_message_id'";
+    $result = $conn->query($sql);
+    $row = mysqli_fetch_array($result);
+    $replyingto_message = $row['message'];
+    $replyingto_username = "Svarer til: " . $row['username'];
+    echo "<style>.replyingto_container{display: inline;}</style>";
+    $_SESSION['svarertil'] = $reply_message_id;
+}
+
+//Funksjon for å laste inn flere meldinger
+if(!empty($_POST['last_inn_flere'])){
+    $_SESSION['message_amount'] = $_SESSION['message_amount'] + 50;
+}
 
 //Hvis du ikke er logget inn, blir du redirected
 if(!empty($_SESSION['username'])){
@@ -34,11 +52,6 @@ if(!empty($_POST['delete_message'])){
     $delete = $_POST['delete_message'];
     $sql = "DELETE FROM messages WHERE message_id=$delete";
     $conn->query($sql);
-}
-
-//Funksjon for å laste inn flere meldinger
-if(!empty($_POST['last_inn_flere'])){
-    $_SESSION['message_amount'] = $_SESSION['message_amount'] + 50;
 }
 
 //Funksjon for å endre melding
@@ -76,21 +89,38 @@ if(!empty($_POST['message_content'])){
             $folder = 'user_images/'.$newfilename;
             $file_name = $newfilename;
         };
+        //Inserter meldingen inn i database
+        $notif_time = time();
+        $sql = "SELECT * FROM users WHERE username='$username'";
+        $result = $conn->query($sql);
+        $row = mysqli_fetch_array($result);
+        $username_color = $row['username_color'];
+        // Hvis meldingen er en reply til en annen melding, insert id'en til den andre meldingen
+        if(isset($_SESSION['svarertil']) and $_SESSION['svarertil'] != 0) {
+            $svarertil = $_SESSION['svarertil'];
+            $_SESSION['svarertil'] = 0;
+        }
         if(move_uploaded_file($tempname, $folder)){
-            $sql = "INSERT INTO messages (username, message, file, date, time) VALUES ('$username', '$message_content', '$file_name', '$date', '$time')";
+            $sql = "INSERT INTO messages (username, message, file, date, time, notif_time, username_color, reply) VALUES ('$username', '$message_content', '$file_name', '$date', '$time', $notif_time, '$username_color', $svarertil)";
         } else {
-            $sql = "INSERT INTO messages (username, message, date, time) VALUES ('$username', '$message_content', '$date', '$time')";
+            $sql = "INSERT INTO messages (username, message, date, time, notif_time, username_color, reply) VALUES ('$username', '$message_content', '$date', '$time', $notif_time, '$username_color', $svarertil)";
         };
         $result = $conn->query($sql);
     };
 }
+
+$sql = "SELECT username_color FROM users WHERE username='$username'";
+$result = $conn->query($sql);
+$row = mysqli_fetch_array($result);
+echo "<style>#sidebarUsername{color:" . $row['username_color'] . "}</style>"
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Message Board</title>
+    <title id="board_title">Message Board</title>
     <link rel="stylesheet" href="https://use.typekit.net/wte3ssy.css">
     <link rel="icon" type="image/x-icon" href="img/Message_Board_Logo.svg">
     <style><?php include "style.css" ?></style>
@@ -98,7 +128,7 @@ if(!empty($_POST['message_content'])){
     <script class="jsbin" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
     <script class="jsbin" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.0/jquery-ui.min.js"></script>
 </head>
-<body onload="table()">
+<body>
     <!--Div som popper opp når man skal endre melding-->
     <div class="blurry_container">
         <div class="edit_message_container">
@@ -147,6 +177,16 @@ if(!empty($_POST['message_content'])){
     <div class="corner_logo">
         <img src="img/Message_Board_Logo.svg" alt="Message Board Logo">
     </div>
+    <div class="users_online_container">
+        <div class="users_online">
+            <img src="img/users_online.svg" alt="Brukere online">
+            <p id="onlineAmount"></p>
+        </div>
+        <div class="users_online_list">
+            <div class="users_online_text_container" id="usersOnline">
+            </div>
+        </div>
+    </div>
     <div class="sidebar">
         <div class="dropdown_container">
             <div class="dropdown">
@@ -161,11 +201,16 @@ if(!empty($_POST['message_content'])){
             <div class="sidebar_profile_image_container">
                 <div class="profile_image_sidebar" style="background-image: url(<?php echo "profile_images/" . $profilepicrow['profile_image']; ?>);"></div>
             </div>
-            <p><?php echo $username ?></p>
+            <p id="sidebarUsername"><?php echo $username ?></p>
         </div>
     </div>
+    <div class="replyingto_container">
+        <input type="button" id="cancel_reply" onclick="window.location.reload()"></input>
+        <p class="replyingto_username"><?php echo $replyingto_username; ?></p>
+        <p class="replyingto_message"><?php echo $replyingto_message; ?></p>
+    </div>
     <div class="message_bar">
-        <form action="board.php" method="POST" class="message_form" enctype="multipart/form-data">
+        <form action="board.php" method="POST" class="message_form" enctype="multipart/form-data" autocomplete="off">
             <input type="text" id="writeArea" name="message_content" placeholder="Skriv din melding her." maxlength="450" required>
             <div class="imageMenu" id="imageMenu">
                 <p>Legg til bilde.</p>
@@ -194,12 +239,48 @@ if(!empty($_POST['message_content'])){
             xhttp.send();
         }
 
+        function updatenotif(){
+            const xhttp = new XMLHttpRequest();
+            xhttp.onload = function(){
+                document.getElementById("board_title").innerHTML = this.responseText
+            }
+            xhttp.open("GET", "updatenotif.php");
+            xhttp.send();
+        }
+
         setInterval(function(){
             table();
+            updatenotif();
         }, 2000);
+        //Oppdaterer liste over brukere som er online
+        function onlinelist(){
+            const xhttp = new XMLHttpRequest();
+            xhttp.onload = function(){
+                document.getElementById("usersOnline").innerHTML = this.responseText
+            }
+            xhttp.open("GET", "update_onlinelist.php");
+            xhttp.send();
+        }
+        function onlineAmount(){
+            const xhttp = new XMLHttpRequest();
+            xhttp.onload = function(){
+                document.getElementById("onlineAmount").innerHTML = this.responseText
+            }
+            xhttp.open("GET", "update_onlineamount.php");
+            xhttp.send();
+        }
 
-    </script>
-    <script>
+        setInterval(function(){
+            onlinelist();
+            onlineAmount();
+        }, 5000);
+
+        window.onload=function(){
+        onlinelist();
+        onlineAmount();
+        table();
+        updatenotif();
+        }
         //Script for å vise preview av bilde man legger til melding
         function readURL(input) {
             if (input.files && input.files[0]) {
@@ -215,8 +296,6 @@ if(!empty($_POST['message_content'])){
                 reader.readAsDataURL(input.files[0]);
             }
         }
-    </script>
-    <script>
         // Funksjon for å vise eller skjule bilde meny
         var x = document.getElementById("imageMenu");
         var y = document.getElementById("imageInput");
@@ -231,22 +310,27 @@ if(!empty($_POST['message_content'])){
                 z.src = ""
             }
         }
+        // Gjør at forms ikke blir resubmittet når man reloader siden
+        if ( window.history.replaceState ) {
+            window.history.replaceState( null, null, window.location.href );
+        }
+        //Script som skjuler varsel etter 3 sekunder
+        $("#messages_varsel").delay(3000).hide(1);
+
+        //Scroller til en spesifikk melding og highlighter meldingen
+        function messageScroll(messageID) {
+            document.getElementById(messageID).scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"});
+            document.getElementById(messageID).style.backgroundColor = "#7ED0FF";
+        }
     </script>
 </body>
-<script>
-    // Gjør at forms ikke blir resubmittet når man reloader siden
-    if ( window.history.replaceState ) {
-        window.history.replaceState( null, null, window.location.href );
-    }
-</script>
-<script>
-    //Script som skjuler varsel etter 3 sekunder
-    $("#messages_varsel").delay(3000).hide(1);
-</script>
 <?php
 //Viser varsel hvis en varsel skal vises
     if($visvarsel == 1){
         echo "<style>.messages_varsel{display: block;}</style>";
     };
+    if(!empty($_POST['reply_message'])){
+        echo "<style>.replyingto_container{display: inline;}</style>";
+    }
 ?>
 </html>

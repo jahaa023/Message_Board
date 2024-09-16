@@ -11,6 +11,7 @@ $result = $conn->query($sql);
 //Henter klokken i Oslo
 $datetime = new DateTime( "now", new DateTimeZone( "Europe/Oslo" ) );
 $date = $datetime->format( 'Y-m-d' );
+$replyButton = "";
 
 while ($row = mysqli_fetch_array($result)) {
     //Henter profilbildet til hver melding
@@ -40,13 +41,51 @@ while ($row = mysqli_fetch_array($result)) {
         $deleteButton = "";
         $editButton = "";
     };
+
+    $replyLink = "";
+    if($row['reply'] != 0) {
+        //Hvis meldingen er en reply til en annen melding, legg til knapp som sender deg til meldingen og vis hvilken melding som blir replyet til
+        $sql3 = "SELECT * FROM messages WHERE message_id='" . $row['reply'] . "'";
+        $result3 = $conn->query($sql3);
+        $row3 = mysqli_fetch_array($result3);
+
+        $sql4 = "SELECT * FROM users WHERE username='" . $row3['username'] . "'";
+        $result4 = $conn->query($sql4);
+        $row4 = mysqli_fetch_array($result4);
+
+        $replyLink = "<button id='messageReplyLink' onclick='messageScroll(" . $row['reply'] . ")'>
+            <div class='reply_link_half_container'>
+                <img src='img/reply.svg' class='reply_link_username_arrow'>
+                <div class='reply_link_username_profilepic' style='background-image: url(profile_images/" . $row4['profile_image'] . ");'></div>
+                <p class='reply_link_username' style='color:" . $row3['username_color'] . ";'>" . $row4['username'] . "</p>
+            </div>
+            <div class='reply_link_half_container'>
+                <p class='reply_link_message'>" . $row3['message'] . "</p>
+            </div>
+        </button>";
+    };
+
     //Echoer melding. Hvis melding har bilde, vis bilde
     if ($row['file'] != NULL) {
         $messagefile = "<a target='_blank' href='user_images/" . $row['file'] . "'><img id='message_image' src='user_images/" . $row['file'] . "'></a><br>";
     } else {
         $messagefile = "";
     }
-    echo "<div class='message'><div id='message_username_container'><div id='message_profile_image' style='background-image: url(profile_images/" . $row2['profile_image'] . ");'></div><p id='message_username'>" . validate($row['username']) . "</p><p id='message_timestamp'>" . $row['time'] . " - " . $datemessage . "</p></div><p id='message_content'>" . validate($row['message']) . "</p>" . $messagefile . $deleteButton . $editButton . "</div>";
+
+    //Hvis en link er i meldingen, gjør den at man kan trykke på meldingen
+    $text = strip_tags($row['message']);
+    $textWithLinks = preg_replace('@(https?://([-\w\.]+[-\w])+(:\d+)?(/([\w/_\.#-]*(\?\S+)?[^\.\s])?)?)@', '<a href="$1" target="_blank" rel="nofollow">$1</a>', $text);
+    $message = $textWithLinks;
+    
+    echo "<div class='message' id='" . $row['message_id'] . "' style='border: 1px solid " . $row['username_color'] . "'>
+        <button form='actionForm' id='replyMessage' name='reply_message' value='" . $row['message_id'] . "'></button>
+        <div id='message_username_container'>
+            <div id='message_profile_image' style='background-image: url(profile_images/" . $row2['profile_image'] . ");'></div>
+            <p id='message_username' style='color:" . $row['username_color'] . "'>" . validate($row['username']) . "</p>
+            <p id='message_timestamp'>" . $row['time'] . " - " . $datemessage . "</p>
+        </div>
+        $replyLink
+        <p id='message_content'>" . $message . "</p>" . $messagefile . $deleteButton . $editButton . "</div>";
 };
 //Sjekker om det er mer meldinger i databasen enn det som er lastet inn. Hvis det er flere meldinger, echo en knapp som lar deg laste inn 50 mer
 $sql = "SELECT COUNT(*) c FROM messages";

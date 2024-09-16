@@ -8,6 +8,8 @@ CREATE TABLE users (
     username varchar(255),
     password varchar(255),
     profile_image varchar(50) DEFAULT "defaultprofile.svg",
+    last_login BIGINT DEFAULT 0,
+    username_color varchar(64) DEFAULT '#000000',
     PRIMARY KEY (user_id)
 );
 
@@ -19,5 +21,8 @@ CREATE TABLE messages (
     date varchar(64),
     time varchar(64),
     endret int NULL DEFAULT (NULL),
+    notif_time BIGINT DEFAULT 0,
+    username_color varchar(64) DEFAULT '#000000',
+    reply int DEFAULT 0,
     PRIMARY KEY (message_id)
 );

@@ -1,5 +1,6 @@
 body{
     margin: 0;
+    overflow-y: hidden;
 }
 
 /*A tag som er i øvre høyre hjørne*/
@@ -347,6 +348,7 @@ body{
     background-repeat: no-repeat;
     background-position: center;
     background-size: 60%;
+    top: 20px;
 }
 
 /*Knapp for å vise bilde velg meny, på hover*/
@@ -393,6 +395,7 @@ body{
     border-radius: 15px;
     margin-bottom: 10px;
     background-color: white;
+    overflow-wrap: break-word;
 }
 
 /*Brukernavn i meldingene*/
@@ -575,16 +578,37 @@ body{
     margin-right: 20px;
 }
 
-/*Container som inneholder input for å endre brukernavn på instillinger*/
-#endreBrukernavnMeny {
+/*Knapp for å endre brukernavn farge i settings*/
+#settings_endre_farge{
+    width: 130px;
+    height: 50px;
+    font-family: "indivisible-variable", sans-serif;
+    font-variation-settings: "wght" 400;
+    border: solid 1px black;
+    cursor: pointer;
     position: relative;
-    display: none;
-    top: 20px;
+    top: 7.5px;
+    margin-right: 20px;
 }
 
-/*Container som inneholder input for å endre profilbilde på instillinger*/*/
+/*Container som inneholder input for å endre brukernavn farge på instillinger*/
+#endreFargeMeny{
+    position: relative;
+    top: 20px;
+    display: none;
+}
+
+/*Container som inneholder input for å endre brukernavn på instillinger*/
+#endreBrukernavnMeny {
+    position: absolute;
+    left: 175px;
+    margin-top: 90px;
+}
+
+/*Container som inneholder input for å endre profilbilde på instillinger*/
 #imageMenuSettings{
-    height: 220px;
+    height: 240px;
+    z-index: 999;
 }
 
 /*Lagre knappen når man endrer profilbilde*/
@@ -764,4 +788,206 @@ body{
 /*Knapp man trykker for å kansellere endring av melding, på hover*/
 #cancelSubmitMessageEdit:hover{
     background-color: rgb(188, 47, 47);
+}
+
+/*Container som inneholder counter over hvor mange som er online*/
+.users_online_container{
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 165px;
+    height: 70px;
+    text-align: center;
+    margin-right: 16px;
+    margin-top: 55px;
+    color: #88ffa7;
+    font-family: "indivisible-variable", sans-serif;
+    font-variation-settings: "wght" 600;
+    font-size: 20px;
+}
+
+/*User icon i øvre høyre hjørne*/
+.users_online_container img{
+    position: relative;
+    top: 20px;
+}
+
+/*Container med user icon bilde og counter for antall online brukere*/
+.users_online{
+    width: 70px;
+    height: 70px;
+    position: relative;
+    float: right;
+}
+
+/*Container som inneholder liste over online brukere*/
+.users_online_list{
+    margin-top: 40px;
+    margin-right: 40px;
+    width: 150px;
+    position: relative;
+    top: 30px;
+    height: 200px;
+    border: 2px solid black;
+    float: left;
+    color: black;
+    display: none;
+    background-color: white;
+}
+
+/*p tags i users_online_list*/
+.users_online_list p{
+    font-size: 15px;
+}
+
+/*Container som gjør at brukernavn ikke går ut av div*/
+.users_online_text_container{
+    width: 140px;
+    height: 200px;
+    margin-left: 5px;
+    margin-right: 5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden; 
+}
+
+/*Viser liste over brukere på hover av user iconet*/
+.users_online_container:hover > .users_online_list {
+    display: block;
+}
+
+/*Knapp man trykker for å svare på melding*/
+#replyMessage{
+    position: relative;
+    float: right;
+    top: 0;
+    background-color: transparent;
+    cursor: pointer;
+    background-image: url(img/reply.svg);
+    background-position: center;
+    opacity: 0.3;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-size: 50%;
+    width: 30px;
+    height: 30px;
+    border: none;
+    left: 15px;
+}
+
+/*Knapp man trykker for å svare på melding, på hover*/
+#replyMessage:hover{
+    opacity: 1;
+}
+
+/*Container som inneholder info om hvilken melding du svarer til*/
+.replyingto_container{
+    position: absolute;
+    bottom: 0;
+    margin: 100px;
+    border: black solid 1px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    font-family: "indivisible-variable", sans-serif;
+    font-variation-settings: "wght" 600;
+    color: black;
+    z-index: 999;
+    margin-left: 170px;
+    background-color: white;
+    padding-left: 10px;
+    padding-right: 10px;
+    display: none;
+    max-width: 500px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden; 
+}
+
+/*Knapp for å kansellere svaring av melding*/
+#cancel_reply{
+    width: 20px;
+    height: 20px;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    background-image: url(img/x.svg);
+    background-position: center;
+    opacity: 0.3;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-size: 50%;
+    float: right;
+    position: relative;
+    left: 10px;
+}
+
+/*Knapp for å kansellere svaring av melding, på hover*/
+#cancel_reply:hover{
+    opacity: 1;
+}
+
+/*Knapp man trykker på meldinger som er svar for å automatisk scrolle til meldingen den svarer på*/
+#messageReplyLink{
+    margin-top: 10px;
+    width: 100%;
+    height: 50px;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+}
+
+/*Containere inne i knappen for å scrolle til melding*/
+.reply_link_half_container{
+    width: 100%;
+    height: 25px;
+    display: flex;
+    justify-content: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow-x: hidden; 
+}
+
+/*Pil symbolet inne i knappen for å scrolle til melding*/
+.reply_link_username_arrow{
+    height: 15px;
+    width: 15px;
+    opacity: 0.5;
+}
+
+/*Profilbilde inne i knappen for å scrolle til melding*/
+.reply_link_username_profilepic{
+    width: 25px;
+    height: 25px;
+    border-radius: 25px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    margin-left: 5px;
+}
+
+/*Brukernavn inne i knappen for å scrolle til melding*/
+.reply_link_username{
+    font-family: "indivisible-variable", sans-serif;
+    font-variation-settings: "wght" 600;
+    height: 25px;
+    font-size: 13px;
+    margin-left: 7px;
+    line-height: 7px;
+}
+
+/*Melding inne i knappen for å scrolle til melding*/
+.reply_link_message{
+    font-family: "indivisible-variable", sans-serif;
+    font-variation-settings: "wght" 400;
+    margin-left: 53px;
+    position: relative;
+    bottom: 3px;
+}
+
+/*Spesifikk styling for Firefox*/
+@-moz-document url-prefix() {
+    #addImageButton{
+        position: relative;
+        top: auto;
+    }
 }
